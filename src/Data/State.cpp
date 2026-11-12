@@ -189,7 +189,7 @@ void doAutoSave(GJGameLevel* level) {
 
             auto saveDir = baseDir / "Autosaves";
             if (auto res = asp::fs::createDirAll(saveDir); !res) {
-                geode::log::error("Failed to create autosave directory: {}", res.unwrapErr());
+                geode::log::error("Failed to create autosave directory");
                 return;
             }
 
