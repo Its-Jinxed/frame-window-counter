@@ -83,7 +83,7 @@ void MobileExportPopup::doExport(bool isJson) {
         baseName += ext;
     }
 
-    std::filesystem::path exportDir = (Mod::get()->getSaveDir() / "exports").toStdPath().unwrapOrDefault();
+    std::filesystem::path exportDir = Mod::get()->getSaveDir() / "exports";
     std::error_code ec;
     std::filesystem::create_directories(exportDir, ec);
 
