@@ -1,3 +1,4 @@
+
 #include "LabelPresetPopup.hpp"
 #include "FrameActionPopup.hpp"
 #include "../Data/State.hpp"
@@ -10,6 +11,7 @@
 #include <Geode/utils/async.hpp>
 #include <set>
 #include <optional>
+#include <filesystem>
 
 using namespace geode::prelude;
 
@@ -36,7 +38,7 @@ bool LabelPresetPopup::init() {
     m_idInput->setString("0");
     m_idInput->setCallback([this](std::string const&) {
         this->onLoad(nullptr);
-        });
+    });
     m_mainLayer->addChild(m_idInput);
 
     // ----------------- 第二行：I/F 切换按钮、Min 与 Max -----------------
@@ -61,7 +63,7 @@ bool LabelPresetPopup::init() {
         if (m_currentUseIF) m_currentMinIFStr = text;
         else m_currentMinWindowStr = text;
         this->autoSave();
-        });
+    });
     m_mainLayer->addChild(m_minInput);
 
     m_maxLbl = CCLabelBMFont::create("Max Win:", "bigFont.fnt");
@@ -76,7 +78,7 @@ bool LabelPresetPopup::init() {
         if (m_currentUseIF) m_currentMaxIFStr = text;
         else m_currentMaxWindowStr = text;
         this->autoSave();
-        });
+    });
     m_mainLayer->addChild(m_maxInput);
 
     // ----------------- 第三行至底部：原有设置 -----------------
@@ -108,7 +110,7 @@ bool LabelPresetPopup::init() {
         static_cast<GLubyte>(m_currentColor.r * 255),
         static_cast<GLubyte>(m_currentColor.g * 255),
         static_cast<GLubyte>(m_currentColor.b * 255)
-        });
+    });
     m_colorSprite->setOpacity(static_cast<GLubyte>(m_currentColor.a * 255));
 
     auto colorWrapper = CCNode::create();
@@ -307,7 +309,7 @@ void LabelPresetPopup::onBrowseAudio(CCObject*) {
             safeThis->m_audioInput->setString(selectedPath);
             safeThis->autoSave();
         }
-        });
+    });
     if (popup) {
         popup->showInstant();
     }
@@ -322,7 +324,7 @@ void LabelPresetPopup::onBrowseAudio(CCObject*) {
     Ref<LabelPresetPopup> safeThis = this;
     async::spawn(
         file::pick(file::PickMode::OpenFile, options),
-        [safeThis](Result<std::optional<asp::fs::Path>> result) {
+        [safeThis](Result<std::optional<std::filesystem::path>> result) {
             if (!result.isOk()) return;
             auto opt = result.unwrap();
             if (!opt.has_value()) return;
@@ -344,7 +346,7 @@ void LabelPresetPopup::onColorBtn(CCObject*) {
         static_cast<GLubyte>(m_currentColor.g * 255),
         static_cast<GLubyte>(m_currentColor.b * 255),
         static_cast<GLubyte>(m_currentColor.a * 255)
-        });
+    });
 
     popup->setCallback([safeThis](cocos2d::ccColor4B color) {
         if (!safeThis || !safeThis->getParent()) return;
@@ -362,7 +364,7 @@ void LabelPresetPopup::onColorBtn(CCObject*) {
         }
 
         safeThis->autoSave();
-        });
+    });
 
     popup->show();
 }
@@ -435,7 +437,7 @@ void LabelPresetPopup::onLoad(CCObject*) {
                 static_cast<GLubyte>(p.color.r * 255),
                 static_cast<GLubyte>(p.color.g * 255),
                 static_cast<GLubyte>(p.color.b * 255)
-                });
+            });
             m_colorSprite->setOpacity(static_cast<GLubyte>(p.color.a * 255));
         }
 
