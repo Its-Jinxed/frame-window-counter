@@ -51,7 +51,7 @@ bool MobileAudioPickerPopup::init(std::function<void(std::string)> callback) {
 
 void MobileAudioPickerPopup::scanFiles() {
     m_fileList.clear();
-    std::filesystem::path dir = (Mod::get()->getSaveDir() / "audio").toStdPath().unwrapOrDefault();
+    std::filesystem::path dir = Mod::get()->getSaveDir() / "audio";
     std::error_code ec;
     std::filesystem::create_directories(dir, ec);
 
