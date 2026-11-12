@@ -1,5 +1,6 @@
 #include "SoundManager.hpp"
 #include <vector>
+#include <asp/fs/fs.hpp>
 
 using namespace geode::prelude;
 
