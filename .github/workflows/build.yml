@@ -17,24 +17,6 @@ jobs:
             os: windows-latest
             configure-args: "-DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl"
 
-          # macOS
-          - name: macOS
-            os: macos-latest
-
-          # iOS
-          - name: iOS
-            os: macos-latest
-            target: iOS
-
-          # Android
-          - name: Android32
-            os: ubuntu-latest
-            target: Android32
-
-          - name: Android64
-            os: ubuntu-latest
-            target: Android64
-
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
 
