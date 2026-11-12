@@ -1,6 +1,7 @@
+
 #include "MobileAudioPickerPopup.hpp"
 #include "../Common.hpp"
-#include <asp/fs/std.hpp>
+#include <filesystem>
 #include <algorithm>
 
 using namespace geode::prelude;
@@ -70,7 +71,7 @@ void MobileAudioPickerPopup::scanFiles() {
         std::transform(nameA.begin(), nameA.end(), nameA.begin(), ::tolower);
         std::transform(nameB.begin(), nameB.end(), nameB.begin(), ::tolower);
         return nameA < nameB;
-        });
+    });
 }
 
 void MobileAudioPickerPopup::buildList() {
