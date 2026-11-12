@@ -11,7 +11,6 @@
 #include <gdr_convert.hpp>
 #include <Geode/utils/file.hpp>
 #include <Geode/utils/async.hpp>
-#include <asp/fs/std.hpp>
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
