@@ -1,3 +1,4 @@
+
 #include "FileIO.hpp"
 #include "CmlParser.hpp"
 #include "../Data/State.hpp"
@@ -27,7 +28,7 @@ namespace FileIO {
             geode::queueInMainThread([]() {
                 auto alert = FLAlertLayer::create("Error", "Failed to open file for writing.", "OK");
                 alert->show(); stopAlertAnimation(alert);
-                });
+            });
             return;
         }
 
@@ -48,7 +49,7 @@ namespace FileIO {
                         {"timePosition", act.frame},
                         {"frameWindow", fw},
                         {"isPlayer2", act.isPlayer2}
-                        }));
+                    }));
                 }
                 else {
                     double w_main = std::max(fw - (k - 1.0) / k, 1.0 / k);
@@ -59,7 +60,7 @@ namespace FileIO {
                         {"timePosition", base_frame},
                         {"frameWindow", w_main},
                         {"isPlayer2", act.isPlayer2}
-                        }));
+                    }));
 
                     for (int s = 1; s < k; ++s) {
                         double sub_frame = base_frame + static_cast<double>(s) / static_cast<double>(k);
@@ -68,7 +69,7 @@ namespace FileIO {
                             {"timePosition", sub_frame},
                             {"frameWindow", w_sub},
                             {"isPlayer2", act.isPlayer2}
-                            }));
+                        }));
                     }
                 }
             }
@@ -83,7 +84,7 @@ namespace FileIO {
                     {"timeUnit", "frames"}
                 })},
                 {"frameWindows", arr}
-                });
+            });
             f << rootObject.dump(2);
         }
         else {
@@ -111,7 +112,7 @@ namespace FileIO {
         geode::queueInMainThread([fileName]() {
             auto alert = FLAlertLayer::create("Success", fmt::format("Successfully exported file:\n{}", fileName).c_str(), "OK");
             alert->show(); stopAlertAnimation(alert);
-            });
+        });
     }
 
     static void doImportFromFile(const std::filesystem::path& path, std::function<void()> onSuccessCallback) {
@@ -166,7 +167,8 @@ namespace FileIO {
             else if (ext == ".json") {
                 std::ifstream f(path.string());
                 if (!f) throw std::runtime_error("Cannot open .json file");
-                std::stringstream buffer; buffer << f.rdbuf();
+                std::stringstream buffer;
+                buffer << f.rdbuf();
                 auto res = matjson::parse(buffer.str());
                 if (res.isOk()) {
                     auto root = res.unwrap();
@@ -291,14 +293,14 @@ namespace FileIO {
                 auto alert = FLAlertLayer::create("Success", fmt::format("Loaded {} operations.", addedCount).c_str(), "OK");
                 alert->show(); stopAlertAnimation(alert);
                 if (onSuccessCallback) onSuccessCallback();
-                });
+            });
         }
         catch (const std::exception& e) {
             std::string errMsg = e.what();
             geode::queueInMainThread([errMsg]() {
                 auto alert = FLAlertLayer::create("Error", fmt::format("Failed: {}", errMsg).c_str(), "OK");
                 alert->show(); stopAlertAnimation(alert);
-                });
+            });
         }
     }
 
@@ -308,17 +310,17 @@ namespace FileIO {
 
         std::stable_sort(exportList.begin(), exportList.end(), [](const FrameAction& a, const FrameAction& b) {
             return a.frame < b.frame;
-            });
+        });
 
         async::runtime().spawnBlocking<void>([path, exportList, isJson]() {
             doExportToFile(path, exportList, isJson);
-            });
+        });
     }
 
     void importFromFile(const std::filesystem::path& path, std::function<void()> onSuccessCallback) {
         async::runtime().spawnBlocking<void>([path, onSuccessCallback]() {
             doImportFromFile(path, onSuccessCallback);
-            });
+        });
     }
 
     void exportFWC() {
@@ -334,7 +336,7 @@ namespace FileIO {
 
         std::stable_sort(exportList.begin(), exportList.end(), [](const FrameAction& a, const FrameAction& b) {
             return a.frame < b.frame;
-            });
+        });
 
         file::FilePickOptions options;
         options.defaultPath = "frames.fwc";
@@ -343,19 +345,19 @@ namespace FileIO {
 
         async::spawn(
             file::pick(file::PickMode::SaveFile, options),
-            [exportList](Result<std::optional<asp::fs::Path>> pickResult) {
+            [exportList](Result<std::optional<std::filesystem::path>> pickResult) {
                 if (!pickResult.isOk()) return;
                 auto optPath = pickResult.unwrap();
                 if (!optPath.has_value()) return;
 
-                std::filesystem::path path = optPath.value().toStdPath().unwrapOrDefault();
+                std::filesystem::path path = optPath.value();
                 std::string ext = path.extension().string();
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
                 bool isJson = (ext == ".json");
 
                 async::runtime().spawnBlocking<void>([path, exportList, isJson]() {
                     doExportToFile(path, exportList, isJson);
-                    });
+                });
             }
         );
 #endif
@@ -375,7 +377,7 @@ namespace FileIO {
         options.filters.push_back({
             "Supported Formats",
             { "*.fwc", "*.json", "*.gdr", "*.gdr2", "*.slc", "*.cml" }
-            });
+        });
         options.filters.push_back({ "Frame Window Counter (*.fwc)", { "*.fwc" } });
         options.filters.push_back({ "NANDL Calculator JSON (*.json)", { "*.json" } });
         options.filters.push_back({ "GD Replay / Silicate (*.gdr, *.gdr2, *.slc)", { "*.gdr", "*.gdr2", "*.slc" } });
@@ -383,15 +385,15 @@ namespace FileIO {
 
         async::spawn(
             file::pick(file::PickMode::OpenFile, options),
-            [onSuccessCallback](Result<std::optional<asp::fs::Path>> pickResult) {
+            [onSuccessCallback](Result<std::optional<std::filesystem::path>> pickResult) {
                 if (!pickResult.isOk()) return;
                 auto optPath = pickResult.unwrap();
                 if (!optPath.has_value()) return;
 
-                std::filesystem::path path = optPath.value().toStdPath().unwrapOrDefault();
+                std::filesystem::path path = optPath.value();
                 async::runtime().spawnBlocking<void>([path, onSuccessCallback]() {
                     doImportFromFile(path, onSuccessCallback);
-                    });
+                });
             }
         );
 #endif
